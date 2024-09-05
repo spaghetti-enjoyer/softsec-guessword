@@ -15,7 +15,6 @@ char hashes[MAX_SIZE][100];
 
 int get_index(char *hash)
 {
-    // return -1;
     for (int i = 0; i < map_size; i++)
     {
         if (strcmp(hash, hashes[i]) == 0)
@@ -23,6 +22,7 @@ int get_index(char *hash)
             return i;
         }
     }
+    return -1;
 }
 
 void insert_hash(char *new_password, char *new_hash)
@@ -157,8 +157,8 @@ int main(int argc, char *argv[])
     const char *salt = get_salt(line, read);
 
 
-    char *common_password;
-    while (fscanf(input, "%s", common_password) == 1)
+    char common_password[100];
+    while (fscanf(input, "%99s", common_password) == 1)
     {
         // printf("%s", common_password);
         char *hash = crypt(common_password, salt);
