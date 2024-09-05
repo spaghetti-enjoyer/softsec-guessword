@@ -15,9 +15,6 @@ void test()
 
 char *get_salt(char *shadow_line, ssize_t len)
 {
-    int n = 7;
-    char *res = malloc(n * sizeof(char));
-
     int ctr = 0;
     int start = 0;
     int end = 0;
@@ -27,13 +24,20 @@ char *get_salt(char *shadow_line, ssize_t len)
         if (shadow_line[i] == '$') ctr++;
 
         if (ctr == 1) start = i;
-        if (ctr == 3) end = i+1;
+        if (ctr == 3)
+        {
+            end = i+1;
+            break;
+        }
     }
+
+    char *res = malloc((end - start + 1) * sizeof(char));        
 
     for (int i = 0; i + start < end; i++)
     {
         res[i] = shadow_line[i + start];
     }
+    res[end - start] = '\0';
 
     printf("%s\n%s\n%i %i %i\n", shadow_line, res, ctr, start, end);
     return res;

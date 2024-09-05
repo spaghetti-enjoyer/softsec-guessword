@@ -1,4 +1,5 @@
 gcc -O3 -Wall -Wextra -pthread -o guessword guessword.c -lcrypt -lpthread 
+./guessword training-passwd.txt training-shadow.txt
 
 gcc -O3 -Wall -Wextra -pthread -o draft draft.c -lcrypt -lpthread 
 
