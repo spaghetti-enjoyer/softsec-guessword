@@ -188,6 +188,11 @@ int main(int argc, char *argv[])
     }
 
 
+    for (int i = 0; i < map_size; i++)
+    {
+        printf("%s -> %s\n", passwords[i], hashes[i]);
+    }
+
 
     printf("\n###   ###   ###   ###   ###\n\n");
     printf("salt: %s\n", salt);
