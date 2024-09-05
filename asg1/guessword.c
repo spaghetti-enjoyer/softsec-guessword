@@ -13,7 +13,7 @@ char passwords[MAX_SIZE][100];
 char hashes[MAX_SIZE][100];
 
 
-int get_index(char *hash)
+int look_up(char *hash)
 {
     for (int i = 0; i < map_size; i++)
     {
@@ -79,12 +79,34 @@ char *get_salt(char *shadow_line, ssize_t len)
 }
 
 
-int process_line(char *line, int len, char **username, char **password)
+char *unhash_password(char *encrypted_password)
 {
-    if (0) // times out
+    if (0) // timed out
     {
-        return 1;
+        return NULL;
     }
+
+    int found = look_up(encrypted_password);
+
+    if (found == -1)
+    {
+        return NULL;
+    }
+
+    char *result = malloc((strlen(passwords[found]) + 1) * sizeof(char));
+    if (result == NULL)
+    {
+        printf("failed to allocate memory\n");
+        return NULL;
+    }
+
+    strcpy(result, passwords[found]);
+    return result;
+}
+
+
+void process_line(char *line, int len, char **username, char **password)
+{
 
     int colon_counter = 0;
     int username_end = -1;
@@ -167,7 +189,8 @@ int main(int argc, char *argv[])
 
     fclose(input);
 
-
+    int success_counter = 0;
+    int fail_counter = 0;
     while ((read = getline(&line, &len, shadow)) != -1)
     {
         // printf("%s", line);
@@ -175,27 +198,35 @@ int main(int argc, char *argv[])
         char *username = NULL;
         char *password = NULL;
 
-        if (process_line(line, read, &username, &password) != 0)
+        process_line(line, read, &username, &password);
+
+        char *unhashed_password = unhash_password(password);
+
+        if (unhashed_password == NULL)
         {
+            fail_counter++;
             continue;
         }
 
         printf("%s:%s\n", username, password);
         fflush(stdout);
+        success_counter++;
 
         free(username);
         free(password);
+        free(unhashed_password);
     }
 
 
-    for (int i = 0; i < map_size; i++)
-    {
-        printf("%s -> %s\n", passwords[i], hashes[i]);
-    }
+    // for (int i = 0; i < map_size; i++)
+    // {
+    //     printf("%s -> %s\n", passwords[i], hashes[i]);
+    // }
 
 
     printf("\n###   ###   ###   ###   ###\n\n");
     printf("salt: %s\n", salt);
+    printf("successes: %i\nfailures: %i\ntotal: %i\n", success_counter, fail_counter, success_counter + fail_counter);
 
 
     fclose(passwd);
