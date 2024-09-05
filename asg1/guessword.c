@@ -2,7 +2,42 @@
 #include<stdlib.h>
 #include<string.h>
 
-#include "crypt.h"
+#include<unistd.h>
+
+void test()
+{
+    char *password = "iloveyou";
+    char *salt = "$1$M9";
+    char *hashed_password = crypt(password, salt);
+    printf("plain: %s\nhashed with crypt: %s\n", password, hashed_password);
+}
+
+
+char *get_salt(char *shadow_line, ssize_t len)
+{
+    int n = 7;
+    char *res = malloc(n * sizeof(char));
+
+    int ctr = 0;
+    int start = 0;
+    int end = 0;
+
+    for (int i = 0; i < len; i++)
+    {
+        if (shadow_line[i] == '$') ctr++;
+
+        if (ctr == 1) start = i;
+        if (ctr == 3) end = i+1;
+    }
+
+    for (int i = 0; i + start < end; i++)
+    {
+        res[i] = shadow_line[i + start];
+    }
+
+    printf("%s\n%s\n%i %i %i\n", shadow_line, res, ctr, start, end);
+    return res;
+}
 
 
 int main(int argc, char *argv[])
@@ -22,41 +57,30 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // char *line = NULL;
-    // size_t len = 0;
-    // ssize_t read;
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
 
-    // while ((read = getline(&line, &len, passwd)) != -1)
-    // {
-    //     printf("%s", line);
-    // }
+    // obtaining the salt
+    read = getline(&line, &len, shadow);
+    // printf("%s\n", line);
+    const char *salt = get_salt(line, read);
 
-    // printf("\n###   ###   ###   ###   ###\n\n");
-
-    const char *password = "iloveyou";
-    const char *salt = "$1$M9"; // MD5 algorithm identifier and salt
-
-    char *unhashed_pwsd = NULL;
-    strcpy(unhashed_pwsd, password);
-    strncat(unhashed_pwsd, salt, 5);
-
-    char *hashed_password;
-
-    // Hash the password using the salt
-    hashed_password = md5(unhashed_pwsd);
-
-    if (hashed_password == NULL)
+    while ((read = getline(&line, &len, shadow)) != -1)
     {
-        printf("Error hashing the password.\n");
-        return 1;
+        // printf("%s", line);
     }
 
-    printf("plain: %s\nhashed with md5: %s\n", password, hashed_password);
 
-    // Clean up
+
+
+
+    printf("\n###   ###   ###   ###   ###\n\n");
+    printf("salt: %s", salt);
+
+
     fclose(passwd);
     fclose(shadow);
-    // free(line);
 
     return 0;
 }
