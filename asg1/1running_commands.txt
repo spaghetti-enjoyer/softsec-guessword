@@ -1,6 +1,7 @@
-gcc -O3 -Wall -Wextra -pthread -o guessword guessword.c -I/opt/homebrew/opt/libxcrypt/include -L/opt/homebrew/opt/libxcrypt/lib -lcrypt -lpthread 
+gcc -O3 -Wall -Wextra -pthread -o guessword guessword.c -lcrypt -lpthread 
 
 gcc -O3 -Wall -Wextra -pthread -o draft draft.c -lcrypt -lpthread 
+
 export CPATH=/opt/homebrew/opt/libxcrypt/include:$CPATH
 export LIBRARY_PATH=/opt/homebrew/opt/libxcrypt/lib:$LIBRARY_PATH
 source ~/.zshrc
