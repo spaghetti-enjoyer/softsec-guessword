@@ -105,7 +105,7 @@ char *unhash_password(char *encrypted_password)
 }
 
 
-void process_line(char *line, int len, char **username, char **password)
+int process_line(char *line, int len, char **username, char **password)
 {
 
     int colon_counter = 0;
@@ -198,7 +198,11 @@ int main(int argc, char *argv[])
         char *username = NULL;
         char *password = NULL;
 
-        process_line(line, read, &username, &password);
+        if (process_line(line, read, &username, &password) != 0)
+        {
+            fail_counter++;
+            continue;
+        }
 
         char *unhashed_password = unhash_password(password);
 
@@ -208,7 +212,7 @@ int main(int argc, char *argv[])
             continue;
         }
 
-        printf("%s:%s\n", username, password);
+        printf("%s:%s\n", username, unhashed_password);
         fflush(stdout);
         success_counter++;
 
