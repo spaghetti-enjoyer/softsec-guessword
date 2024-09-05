@@ -16,15 +16,19 @@ void test()
 char *get_salt(char *shadow_line, ssize_t len)
 {
     int ctr = 0;
-    int start = 0;
-    int end = 0;
+    int start = -1;
+    int end = -1;
 
     for (int i = 0; i < len; i++)
     {
         if (shadow_line[i] == '$') ctr++;
 
-        if (ctr == 1) start = i;
-        if (ctr == 3)
+        if (ctr == 1 && start == -1)
+        {
+            // printf("%i\n", i);j
+            start = i;
+        }
+        if (ctr == 3 && end == -1)
         {
             end = i+1;
             break;
@@ -39,7 +43,7 @@ char *get_salt(char *shadow_line, ssize_t len)
     }
     res[end - start] = '\0';
 
-    printf("%s\n%s\n%i %i %i\n", shadow_line, res, ctr, start, end);
+    // printf("%s\n%s\n%i %i %i\n", shadow_line, res, ctr, start, end);
     return res;
 }
 
@@ -80,7 +84,7 @@ int main(int argc, char *argv[])
 
 
     printf("\n###   ###   ###   ###   ###\n\n");
-    printf("salt: %s", salt);
+    printf("salt: %s\n", salt);
 
 
     fclose(passwd);
