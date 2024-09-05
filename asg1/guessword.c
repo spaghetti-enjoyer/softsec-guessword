@@ -4,13 +4,44 @@
 
 #include<unistd.h>
 
-void test()
+
+// MAP IMPLEMENTATION
+
+#define MAX_SIZE 1000000
+int map_size = 0;
+char passwords[MAX_SIZE][100]; 
+char hashes[MAX_SIZE][100];
+
+
+int get_index(char *hash)
 {
-    char *password = "iloveyou";
-    char *salt = "$1$M9";
-    char *hashed_password = crypt(password, salt);
-    printf("plain: %s\nhashed with crypt: %s\n", password, hashed_password);
+    // return -1;
+    for (int i = 0; i < map_size; i++)
+    {
+        if (strcmp(hash, hashes[i]) == 0)
+        {
+            return i;
+        }
+    }
 }
+
+void insert_hash(char *new_password, char *new_hash)
+{
+    strcpy(passwords[map_size], new_password);
+    strcpy(hashes[map_size], new_hash);
+    map_size++;
+}
+
+
+
+
+// void test()
+// {
+//     char *password = "iloveyou";
+//     char *salt = "$1$M9";
+//     char *hashed_password = crypt(password, salt);
+//     printf("plain: %s\nhashed with crypt: %s\n", password, hashed_password);
+// }
 
 
 char *get_salt(char *shadow_line, ssize_t len)
@@ -30,7 +61,7 @@ char *get_salt(char *shadow_line, ssize_t len)
         }
         if (ctr == 3 && end == -1)
         {
-            end = i+1;
+            end = i;
             break;
         }
     }
@@ -48,6 +79,56 @@ char *get_salt(char *shadow_line, ssize_t len)
 }
 
 
+int process_line(char *line, int len, char **username, char **password)
+{
+    if (0) // times out
+    {
+        return 1;
+    }
+
+    int colon_counter = 0;
+    int username_end = -1;
+    int password_start = -1;
+    int password_end = -1;
+
+    for (int i = 0; i < len; i++)
+    {
+        if (line[i] == ':') colon_counter++;
+
+        if (colon_counter == 1 && username_end == -1)
+        {
+            username_end = i;
+            password_start = i + 1;
+        }
+
+        if (colon_counter == 2 && password_end == -1)
+        {
+            password_end = i;
+            break;
+        }
+    }
+
+    if (username_end == -1 || password_start == -1 || password_end == -1) {
+        return 1; // Error: Invalid line format
+    }
+
+    *username = malloc((username_end + 1) * sizeof(char));
+    *password = malloc((password_end - password_start + 1) * sizeof(char));
+
+    if (*username == NULL || *password == NULL) {
+        return 1; // Error: Memory allocation failed
+    }
+
+    strncpy(*username, line, username_end);
+    (*username)[username_end] = '\0';
+
+    strncpy(*password, line + password_start, password_end - password_start);
+    (*password)[password_end - password_start] = '\0';
+
+    return 0;
+}
+
+
 int main(int argc, char *argv[])
 {
     if (argc != 3)
@@ -59,9 +140,11 @@ int main(int argc, char *argv[])
     FILE *passwd = fopen(argv[1], "r");
     FILE *shadow = fopen(argv[2], "r");
 
-    if (!passwd || !shadow)
+    FILE *input = fopen("final_input.txt", "r");
+
+    if (!passwd || !shadow || !input)
     {
-        printf("Could not open input file.\n");
+        printf("Could not open file.\n");
         return 1;
     }
 
@@ -71,15 +154,38 @@ int main(int argc, char *argv[])
 
     // obtaining the salt
     read = getline(&line, &len, shadow);
-    // printf("%s\n", line);
     const char *salt = get_salt(line, read);
+
+
+    char *common_password;
+    while (fscanf(input, "%s", common_password) == 1)
+    {
+        // printf("%s", common_password);
+        char *hash = crypt(common_password, salt);
+        insert_hash(common_password, hash);
+    }
+
+    fclose(input);
+
 
     while ((read = getline(&line, &len, shadow)) != -1)
     {
         // printf("%s", line);
+
+        char *username = NULL;
+        char *password = NULL;
+
+        if (process_line(line, read, &username, &password) != 0)
+        {
+            continue;
+        }
+
+        printf("%s:%s\n", username, password);
+        fflush(stdout);
+
+        free(username);
+        free(password);
     }
-
-
 
 
 
