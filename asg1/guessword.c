@@ -7,7 +7,7 @@
 
 // MAP IMPLEMENTATION
 
-#define MAX_SIZE 1000000
+#define MAX_SIZE 10000000
 int map_size = 0;
 char passwords[MAX_SIZE][100]; 
 char hashes[MAX_SIZE][100];
@@ -191,8 +191,6 @@ int main(int argc, char *argv[])
     FILE *passwd = fopen(argv[1], "r");
     FILE *shadow = fopen(argv[2], "r");
 
-    // FILE *input = fopen("final_input.txt", "r");
-
     if (!passwd || !shadow)
     {
         printf("Could not open file.\n");
@@ -208,7 +206,7 @@ int main(int argc, char *argv[])
     const char *salt = get_salt(line, read);
 
     // common passwords
-    int rainbow_files = 2;
+    int rainbow_files = 3;
     char *inputs[] = {"top_250_raw.txt", "unique_words.txt", "up_to_million.txt"};
 
     read_all_common_inputs(inputs, rainbow_files, salt);
@@ -247,6 +245,11 @@ int main(int argc, char *argv[])
     }
 
 
+    // for (int i = 0; i < map_size; i++)
+    // {
+    //     printf("%s\n", passwords[i]);
+    // }
+    // printf("total map size: %i\n", map_size);
 
     printf("\n###   ###   ###   ###   ###\n\n");
     printf("salt: %s\n", salt);
@@ -254,8 +257,6 @@ int main(int argc, char *argv[])
 
 
     free(line);
-    // free(inputs);
-    // free(salt);
 
     fclose(passwd);
     fclose(shadow);
