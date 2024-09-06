@@ -3,3 +3,4 @@ gcc -O3 -Wall -Wextra -pthread -o guessword guessword.c -lcrypt -lpthread
 
 gcc -O3 -Wall -Wextra -pthread -o draft draft.c -lcrypt -lpthread 
 
+python3 process_book.py dictionary/gutenberg/Gullivers\ Travels.txt dictionary/gutenberg/Adventures\ of\ Huckleberry\ Finn.txt dictionary/gutenberg/Alices\ Adventures\ in\ Wonderland.txt dictionary/gutenberg/Frankenstein.txt dictionary/gutenberg/Grimms\ Fairy\ Tales.txt dictionary/gutenberg/Pride\ and\ Prejudice.txt dictionary/gutenberg/The\ Adventures\ of\ Sherlock\ Holmes.txt dictionary/gutenberg/The\ Divine\ Comedy.txt dictionary/gutenberg/The\ Kama\ Sutra\ of\ Vatsyayana.txt dictionary/gutenberg/The\ Prince.txt
