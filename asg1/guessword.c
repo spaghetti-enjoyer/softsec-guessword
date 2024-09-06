@@ -156,7 +156,7 @@ void process_common_input_file(FILE *input, const char *salt)
     char common_password[100];
     while (fscanf(input, "%99s", common_password) == 1)
     {
-        // printf("%s", common_password);
+        // printf("%s\n", common_password);
         char *hash = crypt(common_password, salt);
         insert_hash(common_password, hash);
 
@@ -209,18 +209,10 @@ int main(int argc, char *argv[])
 
     // common passwords
     int rainbow_files = 2;
-    char *inputs[] = {"final_input.txt", "unique_words.txt"};
+    char *inputs[] = {"top_250_raw.txt", "unique_words.txt", "up_to_million.txt"};
 
     read_all_common_inputs(inputs, rainbow_files, salt);
-    // char common_password[100];
-    // while (fscanf(input, "%99s", common_password) == 1)
-    // {
-    //     // printf("%s", common_password);
-    //     char *hash = crypt(common_password, salt);
-    //     insert_hash(common_password, hash);
-    // }
 
-    // fclose(input);
 
     int success_counter = 0;
     int fail_counter = 0;

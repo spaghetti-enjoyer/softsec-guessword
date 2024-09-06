@@ -8,7 +8,7 @@ int main() {
         return EXIT_FAILURE;
     }
 
-    FILE *output = fopen("final_input.txt", "w");
+    FILE *output = fopen("top_250_raw.txt", "w");
     if (!output)
     {
         printf("failed to create output fle.\n");
