@@ -151,6 +151,34 @@ int process_line(char *line, int len, char **username, char **password)
 }
 
 
+void process_common_input_file(FILE *input, char *salt)
+{
+    char common_password[100];
+    while (fscanf(input, "%99s", common_password) == 1)
+    {
+        // printf("%s", common_password);
+        char *hash = crypt(common_password, salt);
+        insert_hash(common_password, hash);
+    }
+}
+
+
+void read_all_common_inputs(char **file_names, int n, char *salt)
+{
+    for (int i = 0; i < n; i++)
+    {
+        FILE *input = fopen(file_names[i], "r");
+        if (!input)
+        {
+            printf("Error opening rainbow file.\n");
+            return;
+        }
+        process_common_input_file(input, salt);
+        fclose(input);
+    }
+}
+
+
 int main(int argc, char *argv[])
 {
     if (argc != 3)
@@ -162,9 +190,9 @@ int main(int argc, char *argv[])
     FILE *passwd = fopen(argv[1], "r");
     FILE *shadow = fopen(argv[2], "r");
 
-    FILE *input = fopen("final_input.txt", "r");
+    // FILE *input = fopen("final_input.txt", "r");
 
-    if (!passwd || !shadow || !input)
+    if (!passwd || !shadow)
     {
         printf("Could not open file.\n");
         return 1;
@@ -178,16 +206,20 @@ int main(int argc, char *argv[])
     read = getline(&line, &len, shadow);
     const char *salt = get_salt(line, read);
 
+    // common passwords
+    int rainbow_files = 2;
+    char **inputs = {"final_input.txt", "unique_words.txt"};
 
-    char common_password[100];
-    while (fscanf(input, "%99s", common_password) == 1)
-    {
-        // printf("%s", common_password);
-        char *hash = crypt(common_password, salt);
-        insert_hash(common_password, hash);
-    }
+    read_all_common_inputs(inputs, rainbow_files, salt);
+    // char common_password[100];
+    // while (fscanf(input, "%99s", common_password) == 1)
+    // {
+    //     // printf("%s", common_password);
+    //     char *hash = crypt(common_password, salt);
+    //     insert_hash(common_password, hash);
+    // }
 
-    fclose(input);
+    // fclose(input);
 
     int success_counter = 0;
     int fail_counter = 0;
@@ -216,6 +248,7 @@ int main(int argc, char *argv[])
         fflush(stdout);
         success_counter++;
 
+        free(line);
         free(username);
         free(password);
         free(unhashed_password);
