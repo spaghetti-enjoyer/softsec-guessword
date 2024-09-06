@@ -208,8 +208,8 @@ int main(int argc, char *argv[])
     const char *salt = get_salt(line, read);
 
     // common passwords
-    int rainbow_files = 2;
-    char *inputs[] = {"top_250_raw.txt", "unique_words.txt", "up_to_million.txt"};
+    int rainbow_files = 4;
+    char *inputs[] = {"top_250_raw.txt", "unique_words.txt", "all_capital.txt", "one_capital.txt", "up_to_million.txt"};
 
     read_all_common_inputs(inputs, rainbow_files, salt);
 
