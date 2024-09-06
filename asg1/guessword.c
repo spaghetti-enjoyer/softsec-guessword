@@ -262,9 +262,9 @@ int main(int argc, char *argv[])
 
 
     free(line);
-    free(inputs);
-    free(salt);
-    
+    // free(inputs);
+    // free(salt);
+
     fclose(passwd);
     fclose(shadow);
 
