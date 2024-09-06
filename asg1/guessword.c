@@ -151,7 +151,7 @@ int process_line(char *line, int len, char **username, char **password)
 }
 
 
-void process_common_input_file(FILE *input, char *salt)
+void process_common_input_file(FILE *input, const char *salt)
 {
     char common_password[100];
     while (fscanf(input, "%99s", common_password) == 1)
@@ -163,7 +163,7 @@ void process_common_input_file(FILE *input, char *salt)
 }
 
 
-void read_all_common_inputs(char **file_names, int n, char *salt)
+void read_all_common_inputs(char **file_names, int n, const char *salt)
 {
     for (int i = 0; i < n; i++)
     {
@@ -208,7 +208,7 @@ int main(int argc, char *argv[])
 
     // common passwords
     int rainbow_files = 2;
-    char **inputs = {"final_input.txt", "unique_words.txt"};
+    char *inputs[] = {"final_input.txt", "unique_words.txt"};
 
     read_all_common_inputs(inputs, rainbow_files, salt);
     // char common_password[100];
