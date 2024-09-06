@@ -171,8 +171,8 @@ void read_all_common_inputs(char **file_names, int n, const char *salt)
         FILE *input = fopen(file_names[i], "r");
         if (!input)
         {
-            printf("Error opening rainbow file.\n");
-            return;
+            printf("Error opening rainbow file %s.\n", file_names[i]);
+            continue;
         }
         process_common_input_file(input, salt);
         fclose(input);
@@ -206,8 +206,8 @@ int main(int argc, char *argv[])
     const char *salt = get_salt(line, read);
 
     // common passwords
-    int rainbow_files = 4;
-    char *inputs[] = {"top_250_raw.txt", "unique_words.txt", "all_capital.txt", "one_capital.txt", "up_to_million.txt"};
+    int rainbow_files = 5;
+    char *inputs[] = {"top_250_raw.txt", "unique_words.txt", "all_caps.txt", "one_capital.txt", "up_to_million.txt"};
 
     read_all_common_inputs(inputs, rainbow_files, salt);
 
@@ -248,7 +248,7 @@ int main(int argc, char *argv[])
     // {
     //     printf("%s\n", passwords[i]);
     // }
-    // printf("total map size: %i\n", map_size);
+    printf("total map size: %i\n", map_size);
 
     printf("\n###   ###   ###   ###   ###\n\n");
     printf("salt: %s\n", salt);
