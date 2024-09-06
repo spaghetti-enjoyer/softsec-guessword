@@ -159,6 +159,7 @@ void process_common_input_file(FILE *input, const char *salt)
         // printf("%s", common_password);
         char *hash = crypt(common_password, salt);
         insert_hash(common_password, hash);
+
     }
 }
 
@@ -248,17 +249,11 @@ int main(int argc, char *argv[])
         fflush(stdout);
         success_counter++;
 
-        free(line);
         free(username);
         free(password);
         free(unhashed_password);
     }
 
-
-    // for (int i = 0; i < map_size; i++)
-    // {
-    //     printf("%s -> %s\n", passwords[i], hashes[i]);
-    // }
 
 
     printf("\n###   ###   ###   ###   ###\n\n");
@@ -266,6 +261,10 @@ int main(int argc, char *argv[])
     printf("successes: %i\nfailures: %i\ntotal: %i\n", success_counter, fail_counter, success_counter + fail_counter);
 
 
+    free(line);
+    free(inputs);
+    free(salt);
+    
     fclose(passwd);
     fclose(shadow);
 
