@@ -246,7 +246,11 @@ int main(int argc, char *argv[])
         free(unhashed_password);
     }
 
-
+    // for (int i = 0; i < map_size; i++)
+    // {
+    //     printf("%s\n", passwords[i]);
+    // }
+    // printf("total map size: %i\n", map_size);
 
     printf("\n###   ###   ###   ###   ###\n\n");
     printf("salt: %s\n", salt);
