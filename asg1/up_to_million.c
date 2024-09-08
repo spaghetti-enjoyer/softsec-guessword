@@ -13,6 +13,8 @@ int main(void)
     for (int i = 0; i <= 1000000; i++)
     {
         fprintf(output, "%i\n", i);
+        fprintf(output, "0%i\n", i);
+
     }
     fclose(output);
 }
