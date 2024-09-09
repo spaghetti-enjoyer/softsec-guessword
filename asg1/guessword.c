@@ -323,7 +323,6 @@ char *insert_funny_letter(char *name, char *funny_letter, int index)
     memcpy(result, name, index);
     memcpy(result + index, funny_letter, letter_len);
     memcpy(result + index + letter_len, name + index + 1, name_len - index - 1);
-
     
     result[name_len + letter_len] = '\0';
 
@@ -735,7 +734,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    int rainbow_files = 9; // 12 total
+    int rainbow_files = 11; // 12 total, 9 ok
     char *inputs[] = {
                     "top_250_raw.txt", 
                     "unique_words.txt", 
@@ -746,10 +745,11 @@ int main(int argc, char *argv[])
                     "xor.txt",
                     "birthdays.txt",
                     "two_word_combinations.txt",
-
                     "common_names.txt",
+                    "names.txt",
+                    
                     "up_to_million.txt",
-                    "names.txt"};
+                    };
 
 
     // process files one-by-one
