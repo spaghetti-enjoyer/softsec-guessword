@@ -516,7 +516,7 @@ void try_password(char *password, char *salt, char *username, char *hash, bool *
 
 
 
-void insert_rainbow_into_map(char *file_name, char **plain, char **hashes, int *map_size, char *salt)
+void insert_rainbow_into_map(char *file_name, char ***plain, char ***hashes, int *map_size, char *salt)
 {
     FILE *input = fopen(file_name, "r");
     if (!input)
@@ -535,8 +535,10 @@ void insert_rainbow_into_map(char *file_name, char **plain, char **hashes, int *
         // insert_hash(common_password, hash);
         strcpy((*plain)[*map_size], common_password);
         strcpy((*hashes)[*map_size], common_hash);
-        map_size++;
+        (*map_size)++;
     }
+    
+    fclose(input);
 }
 
 
@@ -783,7 +785,7 @@ int main(int argc, char *argv[])
                     "up_to_million.txt",
                     "names.txt"};
 
-    read_all_common_inputs(inputs, rainbow_files, salt);
+    // read_all_common_inputs(inputs, rainbow_files, salt);
 
 
     // process files one-by-one
