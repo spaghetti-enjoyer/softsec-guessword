@@ -442,6 +442,7 @@ void try_password(char *password, char *salt, char *username, char *hash, bool *
     if (strcmp(res, hash) == 0)
     {
         printf("%s:%s\n", username, password);
+        fflush(stdout);
         (*guessed)[index] = true;
         global_success_counter++;
     }
@@ -777,6 +778,7 @@ int main(int argc, char *argv[])
                 if (strcmp(shadow_passwords[j], hashed_rainbow[k]) == 0)
                 {
                     printf("%s:%s\n", passwd_usernames[j], plain_rainbow[k]);
+                    fflush(stdout);
                     shadow_passwords_guessed[j] = true;
                     global_success_counter++;
                 }
