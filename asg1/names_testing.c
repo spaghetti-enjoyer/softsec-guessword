@@ -528,7 +528,7 @@ void insert_rainbow_into_map(char *file_name, char ***plain, char ***hashes, int
     char common_password[ENTRY_SIZE];
     while (fscanf(input, "%s", common_password) == 1)
     {
-        printf("read password %i: %s\n", *map_size, common_password);
+        // printf("read password %i: %s\n", *map_size, common_password);
         
         char *common_hash = crypt(common_password, salt);
         computation_counter++;
@@ -584,13 +584,13 @@ int main(int argc, char *argv[])
     // Initialize the arrays
     for (int i = 0; i < SHADOW_SIZE; i++)
     {
-        passwd_usernames[i] = malloc(4 * ENTRY_SIZE * sizeof(char));
+        passwd_usernames[i] = malloc(ENTRY_SIZE * sizeof(char));
         if (passwd_usernames[i] == NULL)
         {
             printf("Memory allocation failed\n");
             return 1;
         }
-        shadow_passwords[i] = malloc(2 * ENTRY_SIZE * sizeof(char));
+        shadow_passwords[i] = malloc(ENTRY_SIZE * sizeof(char));
         if (shadow_passwords[i] == NULL)
         {
             printf("Memory allocation failed\n");
@@ -633,7 +633,7 @@ int main(int argc, char *argv[])
 
 
         // ########################################
-        continue;
+        // continue;
         // ########################################
 
 
@@ -648,6 +648,22 @@ int main(int argc, char *argv[])
             printf("could not read from etc/passwd.\n");
             continue;
         }
+
+        // check if usernames are same => lines in correct order
+        char user_from_shadow[7];
+        char user_from_passwd[7];
+        strncpy(user_from_shadow, line, 6);
+        user_from_shadow[6] = '\0';
+        strncpy(user_from_passwd, passwd_line, 6);
+        user_from_passwd[6] = '\0';
+
+        if (strcmp(user_from_passwd, user_from_shadow) != 0)
+        {
+            printf("lines differ!\n");
+            // continue;
+            return 1;
+        }
+
 
         char **real_names = NULL;
         int names_count = get_all_names_from_line(&real_names, passwd_line);
@@ -797,18 +813,19 @@ int main(int argc, char *argv[])
         }
     }
 
-    int rainbow_files = 10; // 12 total
+    int rainbow_files = 9; // 12 total
     char *inputs[] = {
                     "top_250_raw.txt", 
                     "unique_words.txt", 
                     "all_caps.txt", 
                     "one_capital.txt", 
-                    "common_names.txt",
                     "funny_letters.txt",
                     "zorz.txt",
                     "xor.txt",
                     "birthdays.txt",
                     "two_word_combinations.txt",
+
+                    "common_names.txt",
                     "up_to_million.txt",
                     "names.txt"};
 
@@ -817,11 +834,11 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < rainbow_files; i++)
     {
-        printf("opening %s\n", inputs[i]);
+        // printf("opening %s\n", inputs[i]);
 
         insert_rainbow_into_map(inputs[i], &plain_rainbow, &hashed_rainbow, &rainbow_size, salt);
 
-        printf("opened %s\n", inputs[i]);
+        // printf("opened %s\n", inputs[i]);
 
         if (rainbow_size < 1)
         {
@@ -848,7 +865,7 @@ int main(int argc, char *argv[])
         }
 
         rainbow_size = 0;
-        printf("processed %s.\n", inputs[i]);
+        // printf("processed %s.\n", inputs[i]);
     }
 
 
