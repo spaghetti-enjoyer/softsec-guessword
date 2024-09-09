@@ -386,7 +386,7 @@ char *insert_funny_letter(char *name, char *funny_letter, int index)
 char *make_password_with_funny_letter(char *name, int index)
 {
     char letter = name[index];
-    int name_len = strlen(name);
+    // int name_len = strlen(name);
     // char *result = NULL;
 
     if (letter == 'w')
@@ -492,14 +492,14 @@ void try_password(char *password, char *salt, char *username, char *hash, bool *
         return;
     }
 
-    char *res = crypt(password, hash);
-    if (strcmp(res, hash) == 0)
-    {
-        printf("%s:%s\n", username, password);
-        (*guessed)[index] = true;
-        global_success_counter++;
-    }
-    // printf("%s\n", password);
+    // char *res = crypt(password, salt);
+    // if (strcmp(res, hash) == 0)
+    // {
+    //     printf("%s:%s\n", username, password);
+    //     (*guessed)[index] = true;
+    //     global_success_counter++;
+    // }
+    printf("%s\n", password);
 }
 
 
