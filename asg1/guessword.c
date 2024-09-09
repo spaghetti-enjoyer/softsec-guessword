@@ -404,6 +404,11 @@ char *make_password_with_funny_letter(char *name, int index)
         char *funny_letter = "L|";
         return insert_funny_letter(name, funny_letter, index);
     }
+    else if (letter == 'y')
+    {
+        char *funny_letter = "`/";
+        return insert_funny_letter(name, funny_letter, index);
+    }
     return NULL;
 }
 
