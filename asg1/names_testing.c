@@ -492,14 +492,14 @@ void try_password(char *password, char *salt, char *username, char *hash, bool *
         return;
     }
 
-    // char *res = crypt(password, salt);
-    // if (strcmp(res, hash) == 0)
-    // {
-    //     printf("%s:%s\n", username, password);
-    //     (*guessed)[index] = true;
-    //     global_success_counter++;
-    // }
-    printf("%s\n", password);
+    char *res = crypt(password, salt);
+    if (strcmp(res, hash) == 0)
+    {
+        printf("%s:%s\n", username, password);
+        (*guessed)[index] = true;
+        global_success_counter++;
+    }
+    // printf("%s\n", password);
 }
 
 
@@ -536,8 +536,11 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    // printf("work!!!!\n");
+
+
     // Initialize the arrays
-    for (int i = 0; i < MAX_SIZE; i++)
+    for (int i = 0; i < SHADOW_SIZE; i++)
     {
         passwd_usernames[i] = malloc(SHADOW_SIZE * sizeof(char));
         if (passwd_usernames[i] == NULL)
@@ -554,6 +557,9 @@ int main(int argc, char *argv[])
         shadow_passwords_guessed[i] = false;
     }
 
+    // printf("work!!!!\n");
+
+
 
     char *line = NULL;
     size_t len = 0;
@@ -567,6 +573,8 @@ int main(int argc, char *argv[])
         if (salt == NULL)
         {
             salt = get_salt(line, read);
+
+            // printf("salt: %s\n", salt);
         }
 
         // insert into the unknown passwords from shadow
