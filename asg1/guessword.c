@@ -316,9 +316,15 @@ char *insert_funny_letter(char *name, char *funny_letter, int index)
         return NULL;
     }
 
-    strncpy(result, name, index);
-    strncpy(result + index, funny_letter, letter_len);
-    strncpy(result + index + letter_len, name + index + 1, name_len - index - 1);
+    // strncpy(result, name, index);
+    // strncpy(result + index, funny_letter, letter_len);
+    // strncpy(result + index + letter_len, name + index + 1, name_len - index - 1);
+
+    memcpy(result, name, index);
+    memcpy(result + index, funny_letter, letter_len);
+    memcpy(result + index + letter_len, name + index + 1, name_len - index - 1);
+
+    
     result[name_len + letter_len] = '\0';
 
     return result;
