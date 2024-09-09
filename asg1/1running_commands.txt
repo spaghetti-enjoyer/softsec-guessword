@@ -9,3 +9,5 @@ python3 process_book.py dictionary/gutenberg/Gullivers\ Travels.txt dictionary/g
 
 gcc -O3 -Wall -Wextra -pthread -o names_testing names_testing.c -lcrypt -lpthread
 ./names_testing training-passwd.txt training-shadow.txt
+
+valgrind --leak-check=full ./names_testing training-passwd.txt training-shadow.txt
