@@ -807,7 +807,7 @@ int main(int argc, char *argv[])
         strcpy(hashed_rainbow[rainbow_size], hashed_buffer);
         rainbow_size++;
         
-        free(hashed_buffer);
+        // free(hashed_buffer);
     }
 
     // Insert strings from "01" to "01000000"
@@ -820,7 +820,7 @@ int main(int argc, char *argv[])
         strcpy(hashed_rainbow[rainbow_size], hashed_buffer);
         rainbow_size++;
 
-        free(hashed_buffer);
+        // free(hashed_buffer);
     }
 
     for (int i = 0; i < shadow_password_map_size; i++)
