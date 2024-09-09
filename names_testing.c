@@ -10,8 +10,15 @@ int global_success_counter = 0;
 int computation_counter = 0;
 #define SHADOW_SIZE 10000
 
-#define RAINBOW_SIZE 2000200
+#define RAINBOW_SIZE 1000000
 #define ENTRY_SIZE 64
+
+// MAP IMPLEMENTATION
+
+// #define MAX_SIZE 10000000
+// int map_size = 0;
+// char passwords[MAX_SIZE][100]; 
+// char hashes[MAX_SIZE][100];
 
 
 int look_up(char *hash, char ***shadow_map, int map_size)
@@ -35,13 +42,20 @@ int insert_shadow_passwd(char *username, char *shadow_password, char ***username
     return 0;
 }
 
-// void print_map(char **usernames, char **passwords, bool *present_items, int map_size)
+// void insert_hash(char *new_password, char *new_hash)
 // {
-//     for (int i = 0; i < map_size; i++)
-//     {
-//         printf("%s : %s : guessed? %s\n", usernames[i], passwords[i], present_items[i] ? "true" : "false");
-//     }
+//     strcpy(passwords[map_size], new_password);
+//     strcpy(hashes[map_size], new_hash);
+//     map_size++;
 // }
+
+void print_map(char **usernames, char **passwords, bool *present_items, int map_size)
+{
+    for (int i = 0; i < map_size; i++)
+    {
+        printf("%s : %s : guessed? %s\n", usernames[i], passwords[i], present_items[i] ? "true" : "false");
+    }
+}
 
 
 
@@ -84,9 +98,30 @@ char *get_salt(char *shadow_line, ssize_t len)
 }
 
 
+// char *unhash_password(char *encrypted_password)
+// {
+//     if (0) // timed out
+//     {
+//         return NULL;
+//     }
 
+//     int found = look_up(encrypted_password);
 
+//     if (found == -1)
+//     {
+//         return NULL;
+//     }
 
+//     char *result = malloc((strlen(passwords[found]) + 1) * sizeof(char));
+//     if (result == NULL)
+//     {
+//         printf("failed to allocate memory\n");
+//         return NULL;
+//     }
+
+//     strcpy(result, passwords[found]);
+//     return result;
+// }
 
 
 int process_shadow_line(char *line, int len, char **username, char **password)
@@ -134,6 +169,34 @@ int process_shadow_line(char *line, int len, char **username, char **password)
     return 0;
 }
 
+
+// void process_common_input_file(FILE *input, const char *salt)
+// {
+//     char common_password[100];
+//     while (fscanf(input, "%99s", common_password) == 1)
+//     {
+//         // printf("%s\n", common_password);
+//         char *hash = crypt(common_password, salt);
+//         insert_hash(common_password, hash);
+
+//     }
+// }
+
+
+// void read_all_common_inputs(char **file_names, int n, const char *salt)
+// {
+//     for (int i = 0; i < n; i++)
+//     {
+//         FILE *input = fopen(file_names[i], "r");
+//         if (!input)
+//         {
+//             printf("Error opening rainbow file %s.\n", file_names[i]);
+//             continue;
+//         }
+//         process_common_input_file(input, salt);
+//         fclose(input);
+//     }
+// }
 
 
 
@@ -316,14 +379,9 @@ char *insert_funny_letter(char *name, char *funny_letter, int index)
         return NULL;
     }
 
-    // strncpy(result, name, index);
-    // strncpy(result + index, funny_letter, letter_len);
-    // strncpy(result + index + letter_len, name + index + 1, name_len - index - 1);
-
-    memcpy(result, name, index);
-    memcpy(result + index, funny_letter, letter_len);
-    memcpy(result + index + letter_len, name + index + 1, name_len - index - 1);
-    
+    strncpy(result, name, index);
+    strncpy(result + index, funny_letter, letter_len);
+    strncpy(result + index + letter_len, name + index + 1, name_len - index);
     result[name_len + letter_len] = '\0';
 
     return result;
@@ -332,6 +390,8 @@ char *insert_funny_letter(char *name, char *funny_letter, int index)
 char *make_password_with_funny_letter(char *name, int index)
 {
     char letter = name[index];
+    // int name_len = strlen(name);
+    // char *result = NULL;
 
     if (letter == 'w')
     {
@@ -404,11 +464,6 @@ char *make_password_with_funny_letter(char *name, int index)
         char *funny_letter = "L|";
         return insert_funny_letter(name, funny_letter, index);
     }
-    else if (letter == 'y')
-    {
-        char *funny_letter = "`/";
-        return insert_funny_letter(name, funny_letter, index);
-    }
     return NULL;
 }
 
@@ -447,7 +502,6 @@ void try_password(char *password, char *salt, char *username, char *hash, bool *
     if (strcmp(res, hash) == 0)
     {
         printf("%s:%s\n", username, password);
-        fflush(stdout);
         (*guessed)[index] = true;
         global_success_counter++;
     }
@@ -524,6 +578,8 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    // printf("work!!!!\n");
+
 
     // Initialize the arrays
     for (int i = 0; i < SHADOW_SIZE; i++)
@@ -542,6 +598,9 @@ int main(int argc, char *argv[])
         }
         shadow_passwords_guessed[i] = false;
     }
+
+    // printf("work!!!!\n");
+
 
 
     char *line = NULL;
@@ -696,6 +755,20 @@ int main(int argc, char *argv[])
         free(real_names);
     }
 
+    // print_map(passwd_usernames, shadow_passwords, shadow_passwords_guessed, shadow_password_map_size);
+
+    // // obtaining the salt
+    // read = getline(&line, &len, shadow);
+    // const char *salt = get_salt(line, read);
+
+
+
+
+
+
+    // common passwords
+
+    // init arrays
 
     int rainbow_size = 0;
 
@@ -740,7 +813,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    int rainbow_files = 11; // 11 total, 9 ok
+    int rainbow_files = 9; // 12 total
     char *inputs[] = {
                     "top_250_raw.txt", 
                     "unique_words.txt", 
@@ -751,19 +824,21 @@ int main(int argc, char *argv[])
                     "xor.txt",
                     "birthdays.txt",
                     "two_word_combinations.txt",
+
                     "common_names.txt",
-                    "names.txt"
-                    };
-                    // "up_to_million.txt",
-                    // };
+                    "up_to_million.txt",
+                    "names.txt"};
 
 
     // process files one-by-one
 
     for (int i = 0; i < rainbow_files; i++)
     {
+        // printf("opening %s\n", inputs[i]);
+
         insert_rainbow_into_map(inputs[i], &plain_rainbow, &hashed_rainbow, &rainbow_size, salt);
 
+        // printf("opened %s\n", inputs[i]);
 
         if (rainbow_size < 1)
         {
@@ -783,71 +858,59 @@ int main(int argc, char *argv[])
                 if (strcmp(shadow_passwords[j], hashed_rainbow[k]) == 0)
                 {
                     printf("%s:%s\n", passwd_usernames[j], plain_rainbow[k]);
-                    fflush(stdout);
                     shadow_passwords_guessed[j] = true;
                     global_success_counter++;
                 }
             }
         }
+
         rainbow_size = 0;
+        // printf("processed %s.\n", inputs[i]);
     }
 
 
-    // check with numbers from 1 to 1000000
+    // int success_counter = 0;
+    // int fail_counter = 0;
+    // while ((read = getline(&line, &len, shadow)) != -1)
+    // {
+    //     // printf("%s", line);
 
-    char buffer[10]; // Buffer to hold the generated strings
+    //     char *username = NULL;
+    //     char *password = NULL;
 
-    // Insert strings from "1" to "1000000"
-    for (int i = 1; i <= 1000000; i++) {
-        snprintf(buffer, sizeof(buffer), "%d", i);
-        
-        char *hashed_buffer = crypt(buffer, salt);
+    //     if (process_line(line, read, &username, &password) != 0)
+    //     {
+    //         fail_counter++;
+    //         continue;
+    //     }
 
-        strcpy(plain_rainbow[rainbow_size], buffer);
-        strcpy(hashed_rainbow[rainbow_size], hashed_buffer);
-        rainbow_size++;
-        
-        free(hashed_buffer);
-    }
+    //     char *unhashed_password = unhash_password(password);
 
-    // Insert strings from "01" to "01000000"
-    for (int i = 1; i <= 1000000; i++) {
-        snprintf(buffer, sizeof(buffer), "0%d", i);
+    //     if (unhashed_password == NULL)
+    //     {
+    //         fail_counter++;
+    //         continue;
+    //     }
 
-        char *hashed_buffer = crypt(buffer, salt);
+    //     printf("%s:%s\n", username, unhashed_password);
+    //     fflush(stdout);
+    //     success_counter++;
 
-        strcpy(plain_rainbow[rainbow_size], buffer);
-        strcpy(hashed_rainbow[rainbow_size], hashed_buffer);
-        rainbow_size++;
+    //     free(username);
+    //     free(password);
+    //     free(unhashed_password);
+    // }
 
-        free(hashed_buffer);
-    }
+    // for (int i = 0; i < map_size; i++)
+    // {
+    //     printf("%s\n", passwords[i]);
+    // }
+    // printf("total map size: %i\n", map_size);
 
-    for (int i = 0; i < shadow_password_map_size; i++)
-    {
-        for (int j = 0; j < rainbow_size; j++)
-        {
-            if (shadow_passwords_guessed[j] == true)
-            {
-                continue;
-            }
-
-            if (strcmp(shadow_passwords[i], hashed_rainbow[j]) == 0)
-            {
-                printf("%s:%s\n", passwd_usernames[i], plain_rainbow[j]);
-                fflush(stdout);
-                shadow_passwords_guessed[i] = true;
-                global_success_counter++;
-            }
-        }
-    }
-
-
-
-    // printf("\n###   ###   ###   ###   ###\n\n");
-    // printf("salt: %s\n", salt);
-    // printf("guessed: %i\n", global_success_counter);
-    // printf("total hashes computed: %i\n", computation_counter);
+    printf("\n###   ###   ###   ###   ###\n\n");
+    printf("salt: %s\n", salt);
+    printf("guessed: %i\n", global_success_counter);
+    printf("total hashes computed: %i\n", computation_counter);
     // printf("successes: %i\nfailures: %i\ntotal: %i\n", success_counter, fail_counter, success_counter + fail_counter);
 
 
