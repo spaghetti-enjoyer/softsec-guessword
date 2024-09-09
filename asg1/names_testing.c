@@ -7,11 +7,15 @@
 
 
 int global_success_counter = 0;
+int computation_counter = 0;
 #define SHADOW_SIZE 10000
+
+#define RAINBOW_SIZE 1000000
+#define ENTRY_SIZE 32
 
 // MAP IMPLEMENTATION
 
-#define MAX_SIZE 10000000
+// #define MAX_SIZE 10000000
 // int map_size = 0;
 // char passwords[MAX_SIZE][100]; 
 // char hashes[MAX_SIZE][100];
@@ -493,6 +497,8 @@ void try_password(char *password, char *salt, char *username, char *hash, bool *
     }
 
     char *res = crypt(password, salt);
+    computation_counter++;
+
     if (strcmp(res, hash) == 0)
     {
         printf("%s:%s\n", username, password);
@@ -501,6 +507,39 @@ void try_password(char *password, char *salt, char *username, char *hash, bool *
     }
     // printf("%s\n", password);
 }
+
+
+
+
+
+
+
+
+
+void insert_rainbow_into_map(char *file_name, char **plain, char **hashes, int *map_size, char *salt)
+{
+    FILE *input = fopen(file_name, "r");
+    if (!input)
+    {
+        printf("unable to open rainbow file %s.\n", file_name);
+        return;
+    }
+
+    char common_password[ENTRY_SIZE];
+    while (fscanf(input, "%s", common_password) == 1)
+    {
+        // printf("%s\n", common_password);
+        char *common_hash = crypt(common_password, salt);
+        computation_counter++;
+
+        // insert_hash(common_password, hash);
+        strcpy((*plain)[*map_size], common_password);
+        strcpy((*hashes)[*map_size], common_hash);
+        map_size++;
+    }
+}
+
+
 
 
 
@@ -527,9 +566,9 @@ int main(int argc, char *argv[])
 
     int shadow_password_map_size = 0;
 
-    char **passwd_usernames = malloc(MAX_SIZE * sizeof(char *));
-    char **shadow_passwords = malloc(MAX_SIZE * sizeof(char *));
-    bool *shadow_passwords_guessed = malloc(MAX_SIZE * sizeof(bool));
+    char **passwd_usernames = malloc(SHADOW_SIZE * sizeof(char *));
+    char **shadow_passwords = malloc(SHADOW_SIZE * sizeof(char *));
+    bool *shadow_passwords_guessed = malloc(SHADOW_SIZE * sizeof(bool));
 
     if (shadow_passwords == NULL || shadow_passwords_guessed == NULL) {
         printf("Memory allocation failed\n");
@@ -542,13 +581,13 @@ int main(int argc, char *argv[])
     // Initialize the arrays
     for (int i = 0; i < SHADOW_SIZE; i++)
     {
-        passwd_usernames[i] = malloc(SHADOW_SIZE * sizeof(char));
+        passwd_usernames[i] = malloc(4 * ENTRY_SIZE * sizeof(char));
         if (passwd_usernames[i] == NULL)
         {
             printf("Memory allocation failed\n");
             return 1;
         }
-        shadow_passwords[i] = malloc(SHADOW_SIZE * sizeof(char));
+        shadow_passwords[i] = malloc(2 * ENTRY_SIZE * sizeof(char));
         if (shadow_passwords[i] == NULL)
         {
             printf("Memory allocation failed\n");
@@ -573,8 +612,6 @@ int main(int argc, char *argv[])
         if (salt == NULL)
         {
             salt = get_salt(line, read);
-
-            // printf("salt: %s\n", salt);
         }
 
         // insert into the unknown passwords from shadow
@@ -627,7 +664,7 @@ int main(int argc, char *argv[])
             }
 
             // try 2 digits
-            for (int j = 0; j < 99; j++)
+            for (int j = 60; j < 99; j++) // from 0?
             {
                 proposed_password = make_password_with_number(real_names[i], j);
                 try_password(proposed_password, salt, username, hashed_password, &shadow_passwords_guessed, shadow_password_map_size);
@@ -696,28 +733,89 @@ int main(int argc, char *argv[])
     // const char *salt = get_salt(line, read);
 
 
-    // check passwords involving one's real name
 
 
 
 
-    // // common passwords
-    // int rainbow_files = 12;
-    // char *inputs[] = {
-    //                 "top_250_raw.txt", 
-    //                 "unique_words.txt", 
-    //                 "all_caps.txt", 
-    //                 "one_capital.txt", 
-    //                 "names.txt",
-    //                 "common_names.txt",
-    //                 "funny_letters.txt",
-    //                 "zorz.txt",
-    //                 "xor.txt",
-    //                 "birthdays.txt",
-    //                 "two_word_combinations.txt",
-    //                 "up_to_million.txt"};
+    // common passwords
 
-    // read_all_common_inputs(inputs, rainbow_files, salt);
+    // init arrays
+
+    int rainbow_size = 0;
+
+    char **plain_rainbow = malloc(RAINBOW_SIZE * sizeof(char *));
+    char **hashed_rainbow = malloc(RAINBOW_SIZE * sizeof(char *));
+
+    if (plain_rainbow == NULL || hashed_rainbow == NULL)
+    {
+        printf("failed to allocate memory for rainbow file contents.\n");
+        return 1;
+    }
+
+    for (int i = 0; i < RAINBOW_SIZE; i++)
+    {
+        plain_rainbow[i] = malloc(ENTRY_SIZE * sizeof(char));
+        if (plain_rainbow[i] == NULL)
+        {
+            printf("Memory allocation failed.\n");
+            return 1;
+        }
+        hashed_rainbow[i] = malloc(ENTRY_SIZE * sizeof(char));
+        if (hashed_rainbow[i] == NULL)
+        {
+            printf("Memory allocation failed.\n");
+            return 1;
+        }
+    }
+
+    int rainbow_files = 10; // 12 total
+    char *inputs[] = {
+                    "top_250_raw.txt", 
+                    "unique_words.txt", 
+                    "all_caps.txt", 
+                    "one_capital.txt", 
+                    "common_names.txt",
+                    "funny_letters.txt",
+                    "zorz.txt",
+                    "xor.txt",
+                    "birthdays.txt",
+                    "two_word_combinations.txt",
+                    "up_to_million.txt",
+                    "names.txt"};
+
+    read_all_common_inputs(inputs, rainbow_files, salt);
+
+
+    // process files one-by-one
+
+    for (int i = 0; i < rainbow_files; i++)
+    {
+        insert_rainbow_into_map(inputs[i], &plain_rainbow, &hashed_rainbow, &rainbow_size, salt);
+
+        if (rainbow_size < 1)
+        {
+            printf("did not correctly process rainbow file %s.\n", inputs[i]);
+            continue;
+        }
+
+        for (int j = 0; j < shadow_password_map_size; j++)
+        {
+            if (shadow_passwords_guessed[j] == true)
+            {
+                continue;
+            }
+
+            for (int k = 0; k < rainbow_size; k++)
+            {
+                if (strcmp(shadow_passwords[j], hashed_rainbow[k]) == 0)
+                {
+                    printf("%s:%s\n", passwd_usernames[j], plain_rainbow[k]);
+                    shadow_passwords_guessed[j] = true;
+                    global_success_counter++;
+                }
+            }
+        }
+    }
 
 
     // int success_counter = 0;
@@ -761,10 +859,19 @@ int main(int argc, char *argv[])
     printf("\n###   ###   ###   ###   ###\n\n");
     printf("salt: %s\n", salt);
     printf("guessed: %i\n", global_success_counter);
+    printf("total hashes computed: %i\n", computation_counter);
     // printf("successes: %i\nfailures: %i\ntotal: %i\n", success_counter, fail_counter, success_counter + fail_counter);
 
 
     free(line);
+
+    for (int i = 0; i < RAINBOW_SIZE; i++)
+    {
+        free(plain_rainbow[i]);
+        free(hashed_rainbow[i]);
+    }
+    free(plain_rainbow);
+    free(hashed_rainbow);
 
     fclose(passwd);
     fclose(shadow);
