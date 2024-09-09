@@ -740,7 +740,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    int rainbow_files = 12; // 12 total, 9 ok
+    int rainbow_files = 11; // 12 total, 9 ok
     char *inputs[] = {
                     "top_250_raw.txt", 
                     "unique_words.txt", 
@@ -752,10 +752,10 @@ int main(int argc, char *argv[])
                     "birthdays.txt",
                     "two_word_combinations.txt",
                     "common_names.txt",
-                    "names.txt",
-                    
-                    "up_to_million.txt",
+                    "names.txt"
                     };
+                    // "up_to_million.txt",
+                    // };
 
 
     // process files one-by-one

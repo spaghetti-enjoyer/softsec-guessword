@@ -12,17 +12,3 @@ gcc -O3 -Wall -Wextra -pthread -o names_testing names_testing.c -lcrypt -lpthrea
 
 valgrind --leak-check=full ./names_testing training-passwd.txt training-shadow.txt
 
-
-
-
-In file included from /usr/include/string.h:495,
-                 from guessword.c:3:
-In function ‘strncpy’,
-    inlined from ‘insert_funny_letter’ at guessword.c:320:5:
-/usr/include/aarch64-linux-gnu/bits/string_fortified.h:106:10: warning: ‘__builtin_strncpy’ output truncated before terminating nul copying as many bytes from a string as its length [-Wstringop-truncation]
-  106 |   return __builtin___strncpy_chk (__dest, __src, __len, __bos (__dest));
-      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-guessword.c: In function ‘insert_funny_letter’:
-guessword.c:311:22: note: length computed here
-  311 |     int letter_len = strlen(funny_letter);
-      |                      ^~~~~~~~~~~~~~~~~~~~
