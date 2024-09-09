@@ -1,8 +1,9 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
 
-#include<unistd.h>
+#include <unistd.h>
 
 
 // MAP IMPLEMENTATION
@@ -180,6 +181,97 @@ void read_all_common_inputs(char **file_names, int n, const char *salt)
 }
 
 
+char **get_all_names_from_line(char *line, int len)
+{
+    int start_index = -1;
+    int end_index = -1;
+    int colon_counter = 0;
+    // int comma_counter = 0;
+
+    for (int i = 0; i < len; i++)
+    {
+        if (line[i] == ':')
+        {
+            colon_counter++;
+        }
+        if (colon_counter == 4)
+        {
+            start_index = i+1;
+        }
+        else if (line[i] == ',')
+        {
+            // comma_counter++;
+            end_index = i;
+        }
+    }
+
+    if (start_index == -1 || end_index == -1 || start_index >= end_index)
+    {
+        return NULL; // Invalid indices
+    }
+
+    int names_string_size = end_index - start_index + 1;
+    char *names_string = malloc(names_string_size * sizeof(char));
+    snprintf(names_string, names_string_size, "%.*s", names_string_size - 1, line + start_index);
+
+    if (names_string == NULL)
+    {
+        return NULL;
+    }
+    printf("%s\n", names_string);
+
+    int space_counter = 0;
+    for (int i = 0; i < names_string_size; i++)
+    {
+        if (names_string[i] == ' ')
+        {
+            space_counter++;
+        }
+    }
+
+    int names_count = space_counter + 1;
+    char **all_names = malloc(names_count * sizeof(char *));
+    if (all_names == NULL)
+    {
+        return NULL;
+    }
+
+    int prev_end = -1;
+    for (int i = 0; i < names_count; i++)
+    {
+        int current_end = -1;
+        for (int j = prev_end + 1; j < names_string_size; j++)
+        {
+            if (names_string[j] == ' ')
+            {
+                current_end = j;
+            }
+        }
+        if (current_end == -1)
+        {
+            return NULL;
+        }
+
+        int current_name_size = current_end - prev_end + 1;
+        all_names[i] = malloc(current_name_size * sizeof(char));
+        if (all_names[i] == NULL)
+        {
+            return NULL;
+        }
+
+        snprintf(all_names[i], current_name_size, "%.*s", current_name_size - 1, names_string + prev_end + 1);
+    }
+
+    // for (int i = 0; i < names_count; i++)
+    // {
+    //     printf("name %i: %s\n", i, all_names[i]);
+    // }
+
+    free(names_string);
+    return all_names;
+}
+
+
 int main(int argc, char *argv[])
 {
     if (argc != 3)
@@ -197,13 +289,43 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
 
-    // obtaining the salt
-    read = getline(&line, &len, shadow);
-    const char *salt = get_salt(line, read);
+    // read /etc/shadow
+    char *salt = NULL;
+    while ((read = getline(&line, &len, shadow)) != -1)
+    {
+        // obtaining the salt
+        if (salt == NULL)
+        {
+            salt = get_salt(shadow, read);
+        }
+
+        char *passwd_line = NULL;
+        size_t passwd_len = 0;
+        ssize_t passwd_read;
+
+        if ((read = getline(&passwd_line, &passwd_len, passwd)) == -1)
+        {
+            // did not read line from etc/passwd for some reason
+            continue;
+        }
+
+        char **real_names = get_all_names_from_line(passwd_line, passwd_read);
+    }
+
+    // // obtaining the salt
+    // read = getline(&line, &len, shadow);
+    // const char *salt = get_salt(line, read);
+
+
+    // check passwords involving one's real name
+
+
+
 
     // common passwords
     int rainbow_files = 12;
