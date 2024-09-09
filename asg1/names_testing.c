@@ -11,7 +11,7 @@ int computation_counter = 0;
 #define SHADOW_SIZE 10000
 
 #define RAINBOW_SIZE 1000000
-#define ENTRY_SIZE 32
+#define ENTRY_SIZE 64
 
 // MAP IMPLEMENTATION
 
@@ -771,12 +771,28 @@ int main(int argc, char *argv[])
         if (plain_rainbow[i] == NULL)
         {
             printf("Memory allocation failed.\n");
+            for (int j = 0; j < i; j++) 
+            {
+                free(plain_rainbow[j]);
+            }
+            free(plain_rainbow);
+            free(hashed_rainbow);
             return 1;
         }
         hashed_rainbow[i] = malloc(ENTRY_SIZE * sizeof(char));
         if (hashed_rainbow[i] == NULL)
         {
             printf("Memory allocation failed.\n");
+            for (int j = 0; j <= i; j++)
+            {
+                free(plain_rainbow[j]);
+            }
+            for (int j = 0; j < i; j++)
+            {
+                free(hashed_rainbow[j]);
+            }
+            free(plain_rainbow);
+            free(hashed_rainbow);
             return 1;
         }
     }
@@ -795,8 +811,6 @@ int main(int argc, char *argv[])
                     "two_word_combinations.txt",
                     "up_to_million.txt",
                     "names.txt"};
-
-    // read_all_common_inputs(inputs, rainbow_files, salt);
 
 
     // process files one-by-one
