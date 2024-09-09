@@ -10,7 +10,7 @@ int global_success_counter = 0;
 int computation_counter = 0;
 #define SHADOW_SIZE 10000
 
-#define RAINBOW_SIZE 1000000
+#define RAINBOW_SIZE 2000200
 #define ENTRY_SIZE 64
 
 
@@ -734,7 +734,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    int rainbow_files = 11; // 12 total, 9 ok
+    int rainbow_files = 12; // 12 total, 9 ok
     char *inputs[] = {
                     "top_250_raw.txt", 
                     "unique_words.txt", 
@@ -787,10 +787,10 @@ int main(int argc, char *argv[])
 
 
 
-    printf("\n###   ###   ###   ###   ###\n\n");
-    printf("salt: %s\n", salt);
-    printf("guessed: %i\n", global_success_counter);
-    printf("total hashes computed: %i\n", computation_counter);
+    // printf("\n###   ###   ###   ###   ###\n\n");
+    // printf("salt: %s\n", salt);
+    // printf("guessed: %i\n", global_success_counter);
+    // printf("total hashes computed: %i\n", computation_counter);
     // printf("successes: %i\nfailures: %i\ntotal: %i\n", success_counter, fail_counter, success_counter + fail_counter);
 
 
