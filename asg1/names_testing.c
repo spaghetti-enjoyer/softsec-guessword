@@ -528,7 +528,8 @@ void insert_rainbow_into_map(char *file_name, char ***plain, char ***hashes, int
     char common_password[ENTRY_SIZE];
     while (fscanf(input, "%s", common_password) == 1)
     {
-        // printf("%s\n", common_password);
+        printf("read password %i: %s\n", *map_size, common_password);
+        
         char *common_hash = crypt(common_password, salt);
         computation_counter++;
 
@@ -621,9 +622,19 @@ int main(int argc, char *argv[])
         char *hashed_password = NULL;
         int err = process_shadow_line(line, read, &username, &hashed_password);
 
+        if (err != 0)
+        {
+            printf("Problems with processing /etc/shadow.\n");
+            continue;
+        }
+
         // printf("%s: %s\n", username, hashed_password);
         insert_shadow_passwd(username, hashed_password, &passwd_usernames, &shadow_passwords, &shadow_passwords_guessed, &shadow_password_map_size);
 
+
+        // ########################################
+        continue;
+        // ########################################
 
 
         // getting the names from /etc/passwd
@@ -792,7 +803,11 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < rainbow_files; i++)
     {
+        printf("opening %s\n", inputs[i]);
+
         insert_rainbow_into_map(inputs[i], &plain_rainbow, &hashed_rainbow, &rainbow_size, salt);
+
+        printf("opened %s\n", inputs[i]);
 
         if (rainbow_size < 1)
         {
@@ -817,6 +832,9 @@ int main(int argc, char *argv[])
                 }
             }
         }
+
+        rainbow_size = 0;
+        printf("processed %s.\n", inputs[i]);
     }
 
 
