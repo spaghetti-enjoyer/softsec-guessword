@@ -271,7 +271,7 @@ char *make_password_with_number(char *name, int number)
 char *make_password_from_caps(char *name)
 {
     int name_len = strlen(name);
-    char *result = malloc(name_len * sizeof(char));
+    char *result = malloc((name_len + 1) * sizeof(char));
     if (result == NULL)
     {
         return NULL;
@@ -281,6 +281,7 @@ char *make_password_from_caps(char *name)
     {
         result[i] = name[i] - 32;
     }
+    result[name_len] = '\0';
 
     return result;
 }
