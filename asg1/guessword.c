@@ -293,7 +293,7 @@ char *make_password_with_cap(char *name, int i)
         return NULL;
     }
 
-    char *result = malloc(name_len * sizeof(char));
+    char *result = malloc((name_len + 1) * sizeof(char));
     if (result == NULL)
     {
         return NULL;
